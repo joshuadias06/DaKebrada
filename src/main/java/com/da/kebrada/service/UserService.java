@@ -18,8 +18,14 @@ public class UserService {
     }
 
     public User registerUser(UserDTO dto) {
-        User user = new User(null, dto.name(), dto.email(), dto.cpf(), dto.phone(),
-                passwordEncoder.encode(dto.password()));
+        User user = new User(
+                dto.name(),
+                dto.email(),
+                dto.cpf(),
+                dto.phone(),
+                passwordEncoder.encode(dto.password())
+        );
+
         return repository.save(user);
     }
 }
