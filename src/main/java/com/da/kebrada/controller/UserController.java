@@ -1,7 +1,9 @@
 package com.da.kebrada.controller;
 
 import com.da.kebrada.dto.UserDTO;
+import com.da.kebrada.dto.LoginDTO;
 import com.da.kebrada.model.User;
+import com.da.kebrada.service.AuthenticationService;
 import com.da.kebrada.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService service;
+    private final AuthenticationService authenticationService;
 
-    public UserController(UserService service) {
+    public UserController(UserService service, AuthenticationService authenticationService) {
         this.service = service;
+        this.authenticationService = authenticationService;
     }
 
     @PostMapping("/register")

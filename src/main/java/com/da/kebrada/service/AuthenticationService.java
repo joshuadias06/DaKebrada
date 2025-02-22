@@ -2,6 +2,7 @@ package com.da.kebrada.service;
 
 import com.da.kebrada.repository.UserRepository;
 import com.da.kebrada.security.JwtService;
+import com.da.kebrada.dto.LoginDTO;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
