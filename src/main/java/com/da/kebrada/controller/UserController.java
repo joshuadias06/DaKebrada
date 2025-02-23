@@ -3,7 +3,6 @@ package com.da.kebrada.controller;
 import com.da.kebrada.dto.UserDTO;
 import com.da.kebrada.dto.LoginDTO;
 import com.da.kebrada.model.User;
-import com.da.kebrada.repository.UserRepository;
 import com.da.kebrada.service.AuthenticationService;
 import com.da.kebrada.service.UserService;
 import jakarta.validation.Valid;
@@ -16,18 +15,13 @@ import java.util.List;
 @RequestMapping("/auth")
 public class UserController {
 
-    private final UserRepository repository;
+
     private final UserService service;
     private final AuthenticationService authenticationService;
 
-    public UserController(UserRepository repository, UserService service, AuthenticationService authenticationService) {
-        this.repository = repository;
+    public UserController(UserService service, AuthenticationService authenticationService) {
         this.service = service;
         this.authenticationService = authenticationService;
-    }
-
-    public List<User> getAllUsers() {
-        return repository.findAll();
     }
 
     @PostMapping("/register")

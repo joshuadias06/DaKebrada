@@ -6,6 +6,7 @@ import com.da.kebrada.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,6 +18,10 @@ public class UserService {
     public UserService(UserRepository repository) {
         this.repository = repository;
         this.passwordEncoder = new BCryptPasswordEncoder();
+    }
+
+    public List<User> getAllUsers() {
+        return repository.findAll();
     }
 
     public User registerUser(UserDTO dto) {
