@@ -38,4 +38,10 @@ public class UserController {
         User updatedUser = service.updateUser(id, dto);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        service.deleteUser(id);
+        return ResponseEntity.noContent().build();  // Retorna 204 No Content
+    }
 }
