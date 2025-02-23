@@ -32,4 +32,10 @@ public class UserController {
         String token = authenticationService.authenticate(loginDTO);
         return ResponseEntity.ok(token);
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody @Valid UserDTO dto) {
+        User updatedUser = service.updateUser(id, dto);
+        return ResponseEntity.ok(updatedUser);
+    }
 }
