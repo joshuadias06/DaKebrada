@@ -6,6 +6,8 @@ import com.da.kebrada.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -25,6 +27,23 @@ public class UserService {
                 dto.phone(),
                 passwordEncoder.encode(dto.password())
         );
+
+        return repository.save(user);
+    }
+
+    public User updateUser(Long id, UserDTO dto) {
+        Optional<User> userOptional = repository.findById(id);
+
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("Usuário não encontrado!");
+        }
+
+        User user = userOptional.get();
+        user.setName(dto.name());
+        user.setEmail(dto.email());
+        user.setCpf(dto.cpf());
+        user.setPhone(dto.phone());
+        user.setPassword(passwordEncoder.encode(dto.password()));
 
         return repository.save(user);
     }
