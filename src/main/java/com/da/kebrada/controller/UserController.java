@@ -24,6 +24,12 @@ public class UserController {
         this.authenticationService = authenticationService;
     }
 
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = service.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody @Valid UserDTO dto) {
         User newUser = service.registerUser(dto);
