@@ -3,22 +3,31 @@ package com.da.kebrada.controller;
 import com.da.kebrada.dto.UserDTO;
 import com.da.kebrada.dto.LoginDTO;
 import com.da.kebrada.model.User;
+import com.da.kebrada.repository.UserRepository;
 import com.da.kebrada.service.AuthenticationService;
 import com.da.kebrada.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/auth")
 public class UserController {
 
+    private final UserRepository repository;
     private final UserService service;
     private final AuthenticationService authenticationService;
 
-    public UserController(UserService service, AuthenticationService authenticationService) {
+    public UserController(UserRepository repository, UserService service, AuthenticationService authenticationService) {
+        this.repository = repository;
         this.service = service;
         this.authenticationService = authenticationService;
+    }
+
+    public List<User> getAllUsers() {
+        return repository.findAll();
     }
 
     @PostMapping("/register")
