@@ -38,13 +38,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())  // Desabilitando CSRF usando a nova API
-                .authorizeHttpRequests(auth -> auth  // Usando a nova API para autorização
-                        .requestMatchers("/login", "/register").permitAll()  // Permite acesso público a /login e /register
-                        .anyRequest().authenticated()  // Todas as outras requisições precisam de autenticação
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .formLogin(form -> form  // Configuração do login via formulário
-                        .permitAll()  // Permite acesso público ao formulário de login
+                .formLogin(form -> form
+                        .permitAll()
                 );
 
         return http.build();
