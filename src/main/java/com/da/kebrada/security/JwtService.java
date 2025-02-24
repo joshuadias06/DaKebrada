@@ -3,20 +3,23 @@ package com.da.kebrada.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
+
+import java.security.Key;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "minhaChaveSecreta";
+    private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 dia
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(SECRET_KEY)
                 .compact();
     }
 
@@ -25,13 +28,19 @@ public class JwtService {
     }
 
     private Claims getClaims(String token) {
-        return Jwts.parser()
+        return Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
     public boolean validateToken(String token, String userEmail) {
-        return extractEmail(token).equals(userEmail);
+        try {
+            Claims claims = getClaims(token);
+            return userEmail.equals(claims.getSubject()) && !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
