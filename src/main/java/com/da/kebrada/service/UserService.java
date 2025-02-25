@@ -25,6 +25,14 @@ public class UserService {
     }
 
     public User registerUser(UserDTO dto) {
+        if (repository.findByCpf(dto.cpf()).isPresent()) {
+            throw new RuntimeException("CPF já cadastrado!");
+        }
+
+        if (repository.findByPhone(dto.phone()).isPresent()) {
+            throw new RuntimeException("Número de telefone já cadastrado!");
+        }
+
         User user = new User(
                 dto.name(),
                 dto.email(),
@@ -44,6 +52,15 @@ public class UserService {
         }
 
         User user = userOptional.get();
+
+        if (!user.getCpf().equals(dto.cpf()) && repository.findByCpf(dto.cpf()).isPresent()) {
+            throw new RuntimeException("CPF já cadastrado por outro usuário!");
+        }
+        
+        if (!user.getPhone().equals(dto.phone()) && repository.findByPhone(dto.phone()).isPresent()) {
+            throw new RuntimeException("Número de telefone já cadastrado por outro usuário!");
+        }
+
         user.setName(dto.name());
         user.setEmail(dto.email());
         user.setCpf(dto.cpf());
