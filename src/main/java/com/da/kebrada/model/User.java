@@ -26,13 +26,13 @@ public class User {
     private String cpf;
 
     @NotBlank
+    @Column(unique = true, nullable = false)
     private String phone;
 
     @Getter
     @NotBlank
     private String password;
-
-    // Construtores, se necessário
+    
     public User() {
     }
 
