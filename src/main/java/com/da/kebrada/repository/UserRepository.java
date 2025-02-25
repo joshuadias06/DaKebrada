@@ -6,4 +6,6 @@ import com.da.kebrada.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
+    Optional<User> findByCpf(String cpf);
+    Optional<User> findByPhone(String phone);
 }

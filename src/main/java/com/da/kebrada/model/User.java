@@ -32,7 +32,7 @@ public class User {
     @Getter
     @NotBlank
     private String password;
-    
+
     public User() {
     }
 
