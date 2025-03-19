@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
-@Table(name = "kebrada_users")
+@Table(name = "usuarios")
 public class User {
 
     @Id

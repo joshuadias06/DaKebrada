@@ -7,6 +7,8 @@ import com.da.kebrada.service.AuthenticationService;
 import com.da.kebrada.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -16,7 +18,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 public class UserController {
-
 
     private final UserService service;
     private final AuthenticationService authenticationService;
@@ -28,14 +29,12 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = service.getAllUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(service.getAllUsers());
     }
 
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody @Valid UserDTO dto) {
-        User newUser = service.registerUser(dto);
-        return ResponseEntity.ok(newUser);
+        return ResponseEntity.ok(service.registerUser(dto));
     }
 
     @PostMapping("/login")
@@ -47,16 +46,40 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody @Valid UserDTO dto) {
-        User updatedUser = service.updateUser(id, dto);
+    @PutMapping("/update")
+    public ResponseEntity<User> updateUser(@AuthenticationPrincipal UserDetails userDetails,
+                                           @RequestBody @Valid UserDTO dto) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).build();
+        }
+        User updatedUser = service.updateUser(userDetails.getUsername(), dto);
         return ResponseEntity.ok(updatedUser);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        service.deleteUser(id);
-        return ResponseEntity.noContent().build();  // Retorna 204 No Content
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).build();
+        }
+        service.deleteUser(userDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/user/details")
+    public ResponseEntity<Map<String, Object>> getUserDetails(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        User user = service.findByEmail(userDetails.getUsername());
+
+        Map<String, Object> userResponse = new HashMap<>();
+        userResponse.put("id", user.getId());
+        userResponse.put("name", user.getName());
+        userResponse.put("email", user.getEmail());
+        userResponse.put("cpf", user.getCpf());
+        userResponse.put("phone", user.getPhone());
+
+        return ResponseEntity.ok(userResponse);
     }
 }

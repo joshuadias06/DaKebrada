@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -40,18 +41,14 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUser(Long id, UserDTO dto) {
-        User user = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
+    public User updateUser(String email, UserDTO dto) {
+        User user = findByEmail(email);
 
         validateUserUniquenessForUpdate(user, dto.cpf(), dto.phone());
 
         user.setName(dto.name());
-        user.setEmail(dto.email());
-        user.setCpf(dto.cpf());
         user.setPhone(dto.phone());
 
-        // Atualiza a senha apenas se for diferente
         if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
             user.setPassword(passwordEncoder.encode(dto.password()));
         }
@@ -60,11 +57,14 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(Long id) {
-        if (!repository.existsById(id)) {
-            throw new IllegalArgumentException("Usuário não encontrado!");
-        }
-        repository.deleteById(id);
+    public void deleteUser(String email) {
+        User user = findByEmail(email);
+        repository.delete(user);
+    }
+
+    public User findByEmail(String email) {
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
     }
 
     private void validateUserUniqueness(String cpf, String phone) {
