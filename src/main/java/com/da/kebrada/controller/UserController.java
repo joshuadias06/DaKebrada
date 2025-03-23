@@ -8,6 +8,7 @@ import com.da.kebrada.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,6 +71,8 @@ public class UserController {
         if (userDetails == null) {
             return ResponseEntity.status(401).build();
         }
+
+        System.out.println("Usuário autenticado: " + userDetails.getUsername()); // Depuração
 
         User user = service.findByEmail(userDetails.getUsername());
 

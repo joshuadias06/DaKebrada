@@ -3,20 +3,19 @@ package com.da.kebrada.service;
 import com.da.kebrada.dto.UserDTO;
 import com.da.kebrada.model.User;
 import com.da.kebrada.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
     private final UserRepository repository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository repository, BCryptPasswordEncoder passwordEncoder) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
     }

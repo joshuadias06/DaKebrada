@@ -1,5 +1,6 @@
 package com.da.kebrada.config;
 
+import com.da.kebrada.security.JwtAuthenticationFilter;
 import com.da.kebrada.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +9,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -19,9 +19,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.customUserDetailsService = customUserDetailsService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -39,21 +41,23 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/auth/register", "/auth/login", "/auth/users", "/auth/update/{id}", "/auth/delete/{id}").permitAll()
+                        .requestMatchers("/auth/register", "/auth/login", "/auth/users").permitAll()
+                        .requestMatchers("/auth/update", "/auth/delete", "/auth/user/details").authenticated()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .permitAll()
-                );
+                .sessionManagement(session -> session.sessionCreationPolicy(
+                        org.springframework.security.config.http.SessionCreationPolicy.STATELESS
+                ))
+                .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 
     @Bean
     public WebMvcConfigurer webMvcConfigurer() {
