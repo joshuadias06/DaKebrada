@@ -16,7 +16,6 @@ public class User {
     @NotBlank
     private String name;
 
-    @Getter
     @Email
     @Column(unique = true)
     private String email;
@@ -29,7 +28,6 @@ public class User {
     @Column(unique = true, nullable = false)
     private String phone;
 
-    @Getter
     @NotBlank
     private String password;
 
