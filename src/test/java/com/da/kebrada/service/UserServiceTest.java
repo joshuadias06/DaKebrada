@@ -34,6 +34,7 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp(){
+        //Before Each == Antes de Cada Teste.
         user = new User("John Doe", "john@test.com", "12345678900", "110012938", "encodedPassword");
         userDTO = new UserDTO("John Doe", "john@test.com", "12345678900", "110012938", "encodedPassword");
     }
@@ -64,5 +65,13 @@ public class UserServiceTest {
         verify(repository, never()).save(any(User.class));
     }
 
+    @Test
+    void shouldFindUserByEmail(){
+        when(repository.findByEmail(userDTO.email())).thenReturn(Optional.of(user));
 
+        User foundUser = userService.findByEmail(user.getEmail());
+
+        assertNotNull(foundUser);
+        assertEquals("john@test.com", foundUser.getEmail());
+    }
 }
