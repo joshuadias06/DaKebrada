@@ -93,4 +93,16 @@ public class UserServiceTest {
         assertDoesNotThrow(() -> userService.deleteUser(user.getEmail()));
         verify(repository, times(1)).delete(user);
     }
+
+    @Test
+    void shouldThrowExceptionWhenDeletingNonExistentUser(){
+        when(repository.findByEmail("notfound@test.com")).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> userService.deleteUser("notfound@test.com"));
+
+        assertEquals("Usuário não encontrado!", exception.getMessage());
+        verify(repository, never()).delete(any(User.class));
+    }
+
 }
