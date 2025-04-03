@@ -60,7 +60,7 @@ public class UserServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> userService.registerUser(userDTO));
 
-        assertEquals("CPF ou telefone já cadastrado", exception.getMessage());
+        assertEquals("CPF ou telefone já cadastrado!", exception.getMessage());
         verify(repository, never()).save(any(User.class));
     }
 
