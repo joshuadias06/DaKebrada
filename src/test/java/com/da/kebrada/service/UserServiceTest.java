@@ -74,4 +74,14 @@ public class UserServiceTest {
         assertNotNull(foundUser);
         assertEquals("john@test.com", foundUser.getEmail());
     }
+
+    @Test
+    void shouldThrowExceptionWhenUserNotFoundByEmail(){
+        when(repository.findByEmail("notfound@test.com")).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> userService.findByEmail("notfound@test.com"));
+
+        assertEquals("Usuário não encontrado!", exception.getMessage());
+    }
 }
