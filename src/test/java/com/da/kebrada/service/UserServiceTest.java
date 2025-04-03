@@ -84,4 +84,13 @@ public class UserServiceTest {
 
         assertEquals("Usuário não encontrado!", exception.getMessage());
     }
+
+    @Test
+    void shouldDeleteUserSuccessfully(){
+        when(repository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        doNothing().when(repository).delete(user);
+
+        assertDoesNotThrow(() -> userService.deleteUser(user.getEmail()));
+        verify(repository, times(1)).delete(user);
+    }
 }
