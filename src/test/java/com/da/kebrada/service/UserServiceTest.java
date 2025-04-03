@@ -13,8 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -41,6 +40,7 @@ public class UserServiceTest {
 
     @Test
     void shouldRegisterUserSuccessfully(){
+        //should == deve; when == quando; thenReturn == então retorne.
         when(repository.findByCpfOrPhone(userDTO.cpf(), userDTO.phone())). thenReturn(Optional.empty());
         when(passwordEncoder.encode(userDTO.password())).thenReturn("encodedPassword");
         when(repository.save(any(User.class))).thenReturn(user);
@@ -51,4 +51,18 @@ public class UserServiceTest {
         assertEquals("John Doe", createdUser.getName());
         verify(repository, times(1)).save(any(User.class));
     }
+
+    @Test
+    void shouldNotRegisterUserIfCpfOrPhoneExists(){
+        //should == deve; when == quando; thenReturn == então retorne.
+        when(repository.findByCpfOrPhone(userDTO.cpf(), userDTO.phone())).thenReturn(Optional.of(user));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> userService.registerUser(userDTO));
+
+        assertEquals("CPF ou telefone já cadastrado", exception.getMessage());
+        verify(repository, never()).save(any(User.class));
+    }
+
+
 }
