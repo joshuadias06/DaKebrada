@@ -105,4 +105,22 @@ public class UserServiceTest {
         verify(repository, never()).delete(any(User.class));
     }
 
+    @Test
+    void shouldUpdatedUserSucessfully(){
+        User existingUSer = new User("Old Name", "john@test.com","12345678900", "110012938", "encodedPassword");
+
+        when(repository.findByEmail(userDTO.email())).thenReturn(Optional.of(existingUSer));
+        when(repository.findByCpfOrPhone(userDTO.cpf(), userDTO.phone())).thenReturn(Optional.of(existingUSer));
+        when(passwordEncoder.matches(userDTO.password(), existingUSer.getPassword())).thenReturn(false);
+        when(passwordEncoder.encode(userDTO.password())).thenReturn("newEncodedPassword");
+        when(repository.save(any(User.class))).thenReturn(existingUSer);
+
+        User updatedUser = userService.updateUser(userDTO.email(), userDTO);
+
+        assertNotNull(updatedUser);
+        assertEquals(userDTO.name(), updatedUser.getName());
+        assertEquals("newEncodedPassword", updatedUser.getPassword());
+        verify(repository).save(existingUSer);
+    }
+
 }
