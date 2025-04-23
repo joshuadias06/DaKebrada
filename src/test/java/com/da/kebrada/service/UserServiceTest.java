@@ -123,4 +123,20 @@ public class UserServiceTest {
         verify(repository).save(existingUSer);
     }
 
+    @Test
+    void shouldNotUpdateUserIfCpfOrPhoneBelongsToAnotherUser(){
+        User existingUser = new User("Old Name", "john@test.com", "12345678900", "110012938", "encodedPassword");
+        User anotherUser = new User("Other User", "other@test.com", "12345678900", "110012938", "encodedPassword");
+        anotherUser.setId(999L);
+
+        when(repository.findByEmail(userDTO.email())).thenReturn(Optional.of(existingUser));
+        when(repository.findByCpfOrPhone(userDTO.cpf(), userDTO.phone())).thenReturn(Optional.of(anotherUser));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> userService.updateUser(userDTO.email(), userDTO));
+
+        assertEquals("CPF ou telefone já cadastrado por outro usuario!", exception.getMessage());
+        verify(repository, never()).save(any(User.class));
+    }
+
 }
