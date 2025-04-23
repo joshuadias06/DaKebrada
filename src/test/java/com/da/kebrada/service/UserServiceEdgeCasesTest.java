@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceEdgeCasesTest {
@@ -49,5 +50,15 @@ public class UserServiceEdgeCasesTest {
                 () -> userService.registerUser(invalidDTO));
 
         assertEquals("Senha não pode estar vazia",exception.getMessage());
+    }
+
+    @Test
+    void shouldHandleUnexpectedExceptionFromRepositoryGraceFully(){
+        when(repository.findByEmail(userDTO.email())).thenThrow(new RuntimeException("Banco caiu"));
+
+        Exception exception = assertThrows(RuntimeException.class,
+                () -> userService.findByEmail(userDTO.email()));
+
+        assertEquals("Banco caiu", exception.getMessage());
     }
 }
