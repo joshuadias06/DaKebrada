@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -163,6 +164,23 @@ public class UserServiceTest {
                 () -> userService.updateUser("notfound@test.com", userDTO));
 
         assertEquals("Usuário não encontrado!", exception.getMessage());
+    }
+
+    @Test
+    void shouldReturnAllUsers() {
+        List<User> users = List.of(
+                new User("User1", "u1@test.com", "123", "111", "pw"),
+                new User("User2", "u2@test.com", "456", "222", "pw")
+        );
+
+        when(repository.findAll()).thenReturn(users);
+
+        List<User> result = userService.getAllUsers();
+
+        assertEquals(2, result.size());
+        assertEquals("User1", result.get(0).getName());
+        assertEquals("User2", result.get(2).getName());
+        verify(repository).findAll();
     }
 
 
