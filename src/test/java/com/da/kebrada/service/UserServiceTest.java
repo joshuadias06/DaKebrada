@@ -155,4 +155,15 @@ public class UserServiceTest {
         verify(repository).save(existingUser);
     }
 
+    @Test
+    void shouldThrowExceptionWhenUpdatingNonExistentUser(){
+        when(repository.findByEmail("notfound@test.com")).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> userService.updateUser("notfound@test.com", userDTO));
+
+        assertEquals("Usuário não encontrado!", exception.getMessage());
+    }
+
+
 }
