@@ -139,4 +139,20 @@ public class UserServiceTest {
         verify(repository, never()).save(any(User.class));
     }
 
+    @Test
+    void shouldUpdateUserWithoutChangingPasswordIfMatches() {
+        User existingUser = spy(new User("Old Name", "john@test.com", "12345678900", "110012938", "encodedPassword"));
+
+        when(repository.findByEmail(userDTO.email())).thenReturn(Optional.of(existingUser));
+        when(repository.findByCpfOrPhone(userDTO.cpf(), userDTO.phone())).thenReturn(Optional.of(existingUser));
+        when(passwordEncoder.matches(userDTO.password(), existingUser.getPassword())).thenReturn(true);
+        when(repository.save(any(User.class))).thenReturn(existingUser);
+
+        User updatedUser = userService.updateUser(userDTO.email(), userDTO);
+
+        assertNotNull(updatedUser);
+        verify(existingUser, never()).setPassword(any());
+        verify(repository).save(existingUser);
+    }
+
 }
